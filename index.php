@@ -1,23 +1,6 @@
 <?php
 
-require_once __DIR__ . "/classes/Category.php";
-require_once __DIR__ . "/classes/Product.php";
-require_once __DIR__ . "/classes/Food.php";
-
-$dog = new Category("cane", "<i class=\"fa-solid fa-dog\"></i>");
-$cat = new Category("gatto", "<i class=\"fa-solid fa-cat\"></i>");
-
-$product = new Product("collare", "collare per gatti", "gatti", 1.5, $cat);
-
-$food = new Food("crocchette", "buone", "gatti", 2.4, $cat);
-$food->setExpiration("22/12/2025");
-
-$products = [
-  $product,
-  $food
-];
-
-var_dump($dog);
+require_once __DIR__ . "/data/DatabaseInit.php";
 
 ?>
 
@@ -33,15 +16,26 @@ var_dump($dog);
   </head>
 
   <body>
-    <?php foreach($products as $item) { ?>
-      <h2> <?php echo $item->getName() ?> </h2>
+    <?php foreach($products as $item_array) {
+      foreach($item_array as $item) {?>
+      <h2> <?php echo ucfirst($item->getName()) ?> </h2>
       <?php echo $item->getCategory()->getIcon() ?>
-      <p> <?php echo $item->getDescription() ?> </p>
-      <p> <?php echo $item->getPrice() ?> </p>
+      <p> <?php echo ucfirst($item->getDescription()) ?> </p>
+      <?php if(method_exists($item, "getLocation")) { ?>
+        <p> Posizionamento: <?php echo $item->getLocation() ?> </p>
+      <?php } ?>
+      <?php if(method_exists($item, "getMaterial")) { ?>
+        <p> Materiale: <?php try {
+          echo ucfirst($item->getMaterial()); 
+          } catch (Exception $e) {
+          echo "Attenzione, " . $e->getMessage();
+          }?> </p>
+      <?php } ?>
       <?php if(method_exists($item, "getExpiration")) { ?>
         <p> Scadenza: <?php echo $item->getExpiration() ?> </p>
       <?php } ?>
+      <p> <?php echo $item->getPrice() ?> </p>
 
-    <?php } ?>
+    <?php }} ?>
   </body>
 </html>
